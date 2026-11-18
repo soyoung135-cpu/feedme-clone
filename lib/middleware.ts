@@ -38,10 +38,12 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims()
   const user = data?.claims
 
-  // 로그인 없이 접근할 수 없는 경로는 /settings 뿐이다. 나머지 화면은 공개한다.
-  if (!user && request.nextUrl.pathname.startsWith("/settings")) {
+  // 로그인 없이 접근할 수 없는 경로: /settings, /saved. 나머지 화면은 공개한다.
+  const { pathname, search } = request.nextUrl
+  if (!user && (pathname.startsWith("/settings") || pathname.startsWith("/saved"))) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
+    url.search = `?next=${encodeURIComponent(pathname + search)}`
     return NextResponse.redirect(url)
   }
 

@@ -2,10 +2,9 @@
 
 import { useRef, useState } from "react";
 import { FileTextIcon } from "lucide-react";
-import Link from "next/link";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Empty,
@@ -18,10 +17,10 @@ import { Field, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { SaveButton } from "@/features/saved-articles/components/save-button";
+
 import { isValidHttpUrl } from "../url-input";
-import { ExportPanel } from "./export-panel";
-import { MarkdownView } from "./markdown-view";
-import { ThemeToggle } from "./theme-toggle";
+import { ResultView } from "./result-view";
 
 type Result = { title: string; author: string; markdown: string; domain: string; url: string };
 type State =
@@ -85,22 +84,7 @@ export function Converter() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 py-6">
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold">URL → Markdown</h1>
-          <p className="text-sm text-subtitle">
-            웹 페이지 본문을 Markdown으로 바꿔 AI에게 바로 넘깁니다
-          </p>
-        </div>
-        <div className="flex items-center gap-1">
-          <Link href="/settings" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-            계정
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
-
+    <>
       <form onSubmit={submit} noValidate>
         <Field data-invalid={inputError || undefined}>
           <div className="flex flex-wrap gap-2">
@@ -161,32 +145,26 @@ export function Converter() {
       )}
 
       {state.kind === "result" && (
-        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_272px]">
-          {/* 좁은 화면에서는 패널이 결과 위로 올라간다 */}
-          <div className="order-2 min-w-0 lg:order-1">
-            <Card className="gap-0 py-0">
-              <div className="border-b px-5 py-4">
-                <h2 className="text-xl leading-snug font-semibold">
-                  {state.result.title || state.result.domain}
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {state.result.author && `${state.result.author} · `}
-                  {state.result.domain}
-                </p>
-              </div>
-              <MarkdownView markdown={state.result.markdown} />
-            </Card>
-          </div>
-          <div className="order-1 lg:order-2">
-            <ExportPanel
-              key={session}
-              markdown={state.result.markdown}
-              title={state.result.title}
-              pageUrl={state.result.url}
+        <ResultView
+          key={session}
+          title={state.result.title}
+          author={state.result.author}
+          domain={state.result.domain}
+          markdown={state.result.markdown}
+          pageUrl={state.result.url}
+          panelAction={
+            <SaveButton
+              article={{
+                sourceUrl: state.result.url,
+                title: state.result.title,
+                author: state.result.author,
+                domain: state.result.domain,
+                markdown: state.result.markdown,
+              }}
             />
-          </div>
-        </div>
+          }
+        />
       )}
-    </div>
+    </>
   );
 }
