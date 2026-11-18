@@ -2,9 +2,10 @@
 
 import { useRef, useState } from "react";
 import { FileTextIcon } from "lucide-react";
+import Link from "next/link";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Empty,
@@ -92,7 +93,12 @@ export function Converter() {
             웹 페이지 본문을 Markdown으로 바꿔 AI에게 바로 넘깁니다
           </p>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-1">
+          <Link href="/settings" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+            계정
+          </Link>
+          <ThemeToggle />
+        </div>
       </header>
 
       <form onSubmit={submit} noValidate>

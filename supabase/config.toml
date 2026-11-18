@@ -1,0 +1,6 @@
+project_id = "feedme-clone"
+
+# 이 파일은 원격에 반영할 항목만 선언한다. 선언하지 않은 항목은 원격 값을 그대로 둔다.
+[auth.email]
+# 수업용: 가입 직후 바로 로그인되도록 이메일 확인을 끈다.
+enable_confirmations = false
