@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FileTextIcon } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -36,6 +36,9 @@ export function Converter() {
   // 지우기·새 변환 때 내보내기 패널(프롬프트 선택)을 새로 시작하기 위한 키
   const [session, setSession] = useState(0);
 
+  // 지우기·새 변환 이후 늦게 도착한 이전 응답을 버리기 위한 요청 번호
+  const requestId = useRef(0);
+
   const loading = state.kind === "loading";
 
   async function submit(e: React.FormEvent) {
@@ -47,6 +50,7 @@ export function Converter() {
     }
     setInputError(false);
     setSession((n) => n + 1);
+    const id = ++requestId.current;
     setState({ kind: "loading" });
     try {
       const res = await fetch("/api/convert", {
@@ -55,12 +59,14 @@ export function Converter() {
         body: JSON.stringify({ url: value }),
       });
       const data = await res.json();
+      if (id !== requestId.current) return;
       if (!res.ok) {
         setState({ kind: "error", title: data.title, message: data.message });
         return;
       }
       setState({ kind: "result", result: { ...data, url: value } });
     } catch {
+      if (id !== requestId.current) return;
       setState({
         kind: "error",
         title: "페이지를 가져오지 못했어요",
@@ -70,6 +76,7 @@ export function Converter() {
   }
 
   function clear() {
+    requestId.current++;
     setUrl("");
     setInputError(false);
     setSession((n) => n + 1);
