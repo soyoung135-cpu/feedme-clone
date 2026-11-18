@@ -15,9 +15,14 @@ import { planHandoff, SERVICE_LABEL, type LlmService } from "../llm-handoff";
 const PRESETS = ["요약해줘", "한국어로 번역해줘", "쉽게 설명해줘"];
 const CUSTOM = "직접 입력";
 
-type Props = { markdown: string; title: string; pageUrl: string };
+type Props = {
+  markdown: string;
+  title: string;
+  pageUrl: string;
+  children?: React.ReactNode;
+};
 
-export function ExportPanel({ markdown, title, pageUrl }: Props) {
+export function ExportPanel({ markdown, title, pageUrl, children }: Props) {
   const [chip, setChip] = useState<string | null>(null);
   const [custom, setCustom] = useState("");
 
@@ -67,6 +72,7 @@ export function ExportPanel({ markdown, title, pageUrl }: Props) {
               .md 다운로드
             </Button>
           </div>
+          {children}
         </section>
         <Separator />
         <section className="flex flex-col gap-2">
